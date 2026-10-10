@@ -1,59 +1,42 @@
 package net.irisshaders.iris.pbr.loader;
 
-import net.irisshaders.iris.mixin.texture.ReloadableTextureAccessor;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.DynamicTexture;
 import net.irisshaders.iris.pbr.texture.PBRType;
 import net.irisshaders.iris.vertices.ImmediateState;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.ReloadableTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureContents;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class SimplePBRLoader implements PBRTextureLoader<SimpleTexture> {
+public class SimplePBRLoader implements PBRTextureLoader<Identifier> {
 	@Override
-	public void load(SimpleTexture texture, ResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
-		Identifier location = ((ReloadableTextureAccessor) texture).getLocation();
-
-		AbstractTexture normalTexture = createPBRTexture(location, resourceManager, PBRType.NORMAL);
-		AbstractTexture specularTexture = createPBRTexture(location, resourceManager, PBRType.SPECULAR);
-
-		if (normalTexture != null) {
-			pbrTextureConsumer.acceptNormalTexture(normalTexture);
-		}
-		if (specularTexture != null) {
-			pbrTextureConsumer.acceptSpecularTexture(specularTexture);
-		}
+	public void load(Identifier location, ResourceManager resourceManager, PBRTextureConsumer consumer) {
+		AbstractTexture normal = createPBRTexture(location, resourceManager, PBRType.NORMAL);
+		AbstractTexture specular = createPBRTexture(location, resourceManager, PBRType.SPECULAR);
+		if (normal != null) consumer.acceptNormalTexture(normal);
+		if (specular != null) consumer.acceptSpecularTexture(specular);
 	}
 
 	@Nullable
-	protected AbstractTexture createPBRTexture(Identifier imageLocation, ResourceManager resourceManager, PBRType pbrType) {
-		Identifier pbrImageLocation = imageLocation.withPath(pbrType::appendSuffix);
-
+	private AbstractTexture createPBRTexture(Identifier location, ResourceManager resourceManager, PBRType type) {
+		Identifier pbrLocation = location.withPath(type::appendSuffix);
 		ImmediateState.temporarilyIgnorePass = true;
-		SimpleTexture pbrTexture = new SimpleTexture(pbrImageLocation);
-		TextureContents contents = loadContentsSafe(pbrTexture, resourceManager);
-
-		if (contents == null) {
-			pbrTexture.close();
-			ImmediateState.temporarilyIgnorePass = false;
-			return null;
-		}
-		pbrTexture.apply(contents);
-		ImmediateState.temporarilyIgnorePass = false;
-
-		return pbrTexture;
-	}
-
-	private TextureContents loadContentsSafe(ReloadableTexture texture, ResourceManager manager) {
 		try {
-			return texture.loadContents(manager);
-		} catch (Exception var4) {
+			TextureContents contents = TextureContents.load(resourceManager, pbrLocation);
+			GpuSampler sampler = contents.clamp()
+				? RenderSystem.getSamplerCache().getClampToEdge(contents.blur() ? FilterMode.LINEAR : FilterMode.NEAREST)
+				: RenderSystem.getSamplerCache().getRepeat(contents.blur() ? FilterMode.LINEAR : FilterMode.NEAREST);
+			return new DynamicTexture(pbrLocation::toString, contents.image(), sampler);
+		} catch (IOException e) {
 			return null;
+		} finally {
+			ImmediateState.temporarilyIgnorePass = false;
 		}
 	}
 }

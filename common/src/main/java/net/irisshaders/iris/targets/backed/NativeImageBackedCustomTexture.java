@@ -7,7 +7,7 @@ import net.irisshaders.iris.gl.sampler.GlSampler;
 import net.irisshaders.iris.gl.texture.TextureAccess;
 import net.irisshaders.iris.gl.texture.TextureType;
 import net.irisshaders.iris.shaderpack.texture.CustomTextureData;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.irisshaders.iris.gl.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 
@@ -55,7 +55,7 @@ public class NativeImageBackedCustomTexture extends DynamicTexture implements Te
 	public void upload() {
 		NativeImage image = Objects.requireNonNull(getPixels());
 
-		RenderSystem.getDevice().createCommandEncoder().writeToTexture(this.texture, image);
+		image.writeToGpuTexture(RenderSystem.getDevice().createCommandEncoder(), this.texture);
 	}
 
 	@Override

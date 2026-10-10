@@ -24,7 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.ARGB;
@@ -82,7 +82,7 @@ public final class CommonUniforms {
 			int glId = Iris.getPipelineManager().getPipeline().map(i -> i.getAlbedoTex()).orElse(0);
 			if (glId == 0) return ZERO_VECTOR_2i;
 
-			AbstractTexture texture = TextureTracker.INSTANCE.getTexture(glId);
+			Object texture = TextureTracker.INSTANCE.getTexture(glId);
 			if (texture instanceof TextureAtlas atlas) {
 				TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
 				return new Vector2i(atlasAccessor.callGetWidth(), atlasAccessor.callGetHeight());
@@ -368,7 +368,7 @@ public final class CommonUniforms {
 		// I'm not sure what the best way to deal with this is, but the current approach seems to be an acceptable one -
 		// after all, disabling the overlay results in the intended effect of it not really looking like you're
 		// underwater on most shaderpacks. For now, I will leave this as-is, but it is something to keep in mind.
-		FogType submersionType = client.gameRenderer.mainCamera().getFluidInCamera();
+		FogType submersionType = client.gameRenderer.mainCamera().getFogType();
 		boolean isSpectator = client.player != null && client.player.isSpectator();
 		if (submersionType == FogType.WATER) {
 			return 1;

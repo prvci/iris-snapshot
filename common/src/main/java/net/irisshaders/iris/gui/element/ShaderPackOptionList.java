@@ -188,9 +188,9 @@ public class ShaderPackOptionList extends IrisContainerObjectSelectionList<Shade
 		}
 
 		public int getHoveredWidget(int mouseX) {
-			float positionAcrossWidget = ((float) Mth.clamp(mouseX - cachedPosX, 0, cachedWidth)) / cachedWidth;
+			float positionAcrossWidget = ((float) Math.clamp(mouseX - cachedPosX, 0, cachedWidth)) / cachedWidth;
 
-			return Mth.clamp((int) Math.floor(widgets.size() * positionAcrossWidget), 0, widgets.size() - 1);
+			return Math.clamp((int) Math.floor(widgets.size() * positionAcrossWidget), 0, widgets.size() - 1);
 		}
 
 		@Override

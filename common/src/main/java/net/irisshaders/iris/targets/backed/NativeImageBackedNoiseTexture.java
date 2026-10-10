@@ -6,7 +6,7 @@ import com.mojang.renderpearl.api.textures.FilterMode;
 import net.irisshaders.iris.gl.sampler.GlSampler;
 import net.irisshaders.iris.gl.texture.TextureAccess;
 import net.irisshaders.iris.gl.texture.TextureType;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.irisshaders.iris.gl.texture.DynamicTexture;
 
 import java.util.Objects;
 import java.util.Random;
@@ -36,7 +36,7 @@ public class NativeImageBackedNoiseTexture extends DynamicTexture implements Tex
 	public void upload() {
 		NativeImage image = Objects.requireNonNull(getPixels());
 
-		RenderSystem.getDevice().createCommandEncoder().writeToTexture(this.texture, image);
+		image.writeToGpuTexture(RenderSystem.getDevice().createCommandEncoder(), this.texture);
 	}
 
 	@Override

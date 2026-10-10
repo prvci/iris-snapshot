@@ -20,7 +20,6 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -89,12 +88,12 @@ public abstract class MixinModelViewBobbing {
 		return instance;
 	}
 
-	@WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZZ)V"))
-	private void iris$renderLevel(LevelRenderer instance, GraphicsResourceAllocator graphicsResourceAllocator, boolean y, CameraRenderState cameraRenderState, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean b, boolean x, Operation<Void> original) {
+	@WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Z)V"))
+	private void iris$renderLevel(LevelRenderer instance, GraphicsResourceAllocator graphicsResourceAllocator, boolean y, CameraRenderState cameraRenderState, GpuBufferSlice gpuBufferSlice, boolean b, Operation<Void> original) {
 		if (areShadersOn) {
 			((Matrix4f) cameraRenderState.viewRotationMatrix).mulLocal(bobStack); // need `bob * modelView` not `modelView * bob`
 		}
 
-		original.call(instance, graphicsResourceAllocator, y, cameraRenderState, gpuBufferSlice, vector4f, b, x);
+		original.call(instance, graphicsResourceAllocator, y, cameraRenderState, gpuBufferSlice, b);
 	}
 }

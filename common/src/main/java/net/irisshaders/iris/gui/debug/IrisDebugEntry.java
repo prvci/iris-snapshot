@@ -7,27 +7,29 @@ import net.irisshaders.iris.shadows.ShadowRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.gui.components.debug.DebugGroup;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.Nullable;
 
 public class IrisDebugEntry implements DebugScreenEntry {
+	private static final DebugGroup GROUP = DebugGroup.Builder.titled("Iris").build();
+
 	@Override
 	public void display(DebugScreenDisplayer debugScreenDisplayer, @Nullable Level level, @Nullable LevelChunk levelChunk, @Nullable LevelChunk levelChunk2) {
-		debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] Version: " + Iris.getFormattedVersion());
+		debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] Version: " + Iris.getFormattedVersion());
 
 		if (Iris.getIrisConfig().areShadersEnabled()) {
-			debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] Shaderpack: " + Iris.getCurrentPackName() + (Iris.isFallback() ? " (fallback)" : ""));
-			Iris.getCurrentPack().ifPresent(pack -> debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] " + pack.getProfileInfo()));
-			debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] Color space: " + IrisVideoSettings.colorSpace.name());
+			debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] Shaderpack: " + Iris.getCurrentPackName() + (Iris.isFallback() ? " (fallback)" : ""));
+			Iris.getCurrentPack().ifPresent(pack -> debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] " + pack.getProfileInfo()));
+			debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] Color space: " + IrisVideoSettings.colorSpace.name());
 			ShadowRenderer.ACTIVE = true;
 			if (level != null) {
-				debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] Shadows: " + SodiumWorldRenderer.instance().getChunksDebugString());
+				debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] Shadows: " + SodiumWorldRenderer.instance().getChunksDebugString());
 			}
 			ShadowRenderer.ACTIVE = false;
 		} else {
-			debugScreenDisplayer.addToGroup(Identifier.fromNamespaceAndPath("iris", "name"), "[" + Iris.MODNAME + "] Shaders are disabled");
+			debugScreenDisplayer.addToGroup(GROUP, "[" + Iris.MODNAME + "] Shaders are disabled");
 		}
 
 		//messages.add(3, "Direct Buffers: +" + iris$humanReadableByteCountBin(iris$directPool.getMemoryUsed()));

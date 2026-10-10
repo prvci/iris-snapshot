@@ -22,7 +22,7 @@ import net.irisshaders.iris.shaderpack.properties.PackShadowDirectives;
 import net.irisshaders.iris.shadows.ShadowRenderTargets;
 import net.irisshaders.iris.targets.RenderTarget;
 import net.irisshaders.iris.targets.RenderTargets;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 
 import java.util.OptionalDouble;
 import java.util.Set;

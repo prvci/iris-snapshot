@@ -2,11 +2,10 @@ package net.irisshaders.iris.mixin;
 
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.platform.IrisPlatformHelpers;
-import net.irisshaders.iris.shaderpack.texture.CustomTextureData;
-import net.irisshaders.iris.shaderpack.texture.TextureFilteringData;
-import net.irisshaders.iris.targets.backed.NativeImageBackedCustomTexture;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.renderer.texture.TextureResources;
 import net.minecraft.resources.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * This Mixin is responsible for registering the "widgets" texture used in Iris' GUI's.
@@ -26,7 +26,11 @@ public class MixinMinecraft_Images {
 	private void iris$setupImages(GameConfig arg, CallbackInfo ci) {
 		if (!IrisPlatformHelpers.getInstance().isModLoaded("fabric-resource-loader-v0")) {
 			try {
-				Minecraft.getInstance().getTextureManager().register(Identifier.fromNamespaceAndPath("iris", "textures/gui/widgets.png"), new NativeImageBackedCustomTexture(new CustomTextureData.PngData(new TextureFilteringData(false, false), IOUtils.toByteArray(Iris.class.getResourceAsStream("/assets/iris/textures/gui/widgets.png")))));
+				byte[] bytes = IOUtils.toByteArray(Iris.class.getResourceAsStream("/assets/iris/textures/gui/widgets.png"));
+				ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length).put(bytes).flip();
+				try (NativeImage image = NativeImage.read(buffer)) {
+					Minecraft.getInstance().getTextureManager().register(Identifier.fromNamespaceAndPath("iris", "textures/gui/widgets.png"), TextureResources.from2dImage(() -> "Iris widgets", image));
+				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

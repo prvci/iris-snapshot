@@ -25,7 +25,7 @@ import net.irisshaders.iris.platform.IrisPlatformHelpers;
 import net.irisshaders.iris.vertices.ImmediateState;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteContents.FrameInfo;
 import net.minecraft.client.renderer.texture.TextureAtlas;

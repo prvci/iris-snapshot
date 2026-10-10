@@ -5,7 +5,6 @@ import com.mojang.renderpearl.api.textures.FilterMode;
 import net.irisshaders.iris.pbr.TextureTracker;
 import net.irisshaders.iris.pbr.texture.PBRAtlasHolder;
 import net.irisshaders.iris.pbr.texture.TextureAtlasExtension;
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
@@ -18,10 +17,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TextureAtlas.class)
-public abstract class MixinTextureAtlas extends AbstractTexture implements TextureAtlasExtension {
+public abstract class MixinTextureAtlas implements TextureAtlasExtension {
 	@Shadow
 	@Final
 	private Identifier location;
+	@Shadow
+	public abstract net.minecraft.client.renderer.texture.TextureResources getTexture();
 	@Unique
 	private PBRAtlasHolder pbrHolder;
 
@@ -47,6 +48,6 @@ public abstract class MixinTextureAtlas extends AbstractTexture implements Textu
 
 	@Inject(method = "upload", at = @At("RETURN"))
 	private void iris$onUpload(CallbackInfo ci) {
-		TextureTracker.INSTANCE.trackTexture(texture.iris$getGlId(), (AbstractTexture) (Object) this);
+		TextureTracker.INSTANCE.trackTexture(getTexture().texture().iris$getGlId(), (TextureAtlas) (Object) this);
 	}
 }

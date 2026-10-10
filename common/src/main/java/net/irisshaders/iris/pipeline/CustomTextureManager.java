@@ -23,7 +23,7 @@ import net.irisshaders.iris.targets.backed.NativeImageBackedCustomTexture;
 import net.irisshaders.iris.targets.backed.NativeImageBackedNoiseTexture;
 import net.minecraft.IdentifierException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -146,30 +146,18 @@ public class CustomTextureManager {
 				//     reloads. Re-fetching the texture from the TextureManager every time is the most robust approach for
 				//     now.
 				return new TextureWrapper(() -> {
-					AbstractTexture texture = textureManager.getTexture(textureLocation);
-					if (texture instanceof TextureAtlas || texture instanceof PBRAtlasTexture) {
-						int tex = GlStateManagerAccessor.getActiveTexture();
-						int binding = GlStateManagerAccessor.getTEXTURES()[tex].binding;
-						GlStateManager._activeTexture(GL46C.GL_TEXTURE0 + tex);
-						GlStateManager._bindTexture(binding);
-					}
-					return texture != null ? texture.getTexture().iris$getGlId() : textureManager.getTexture(MissingTextureAtlasSprite.getLocation()).getTexture().iris$getGlId();
+					var texture = textureManager.getTexture(textureLocation);
+					return (texture != null ? texture : textureManager.getTexture(MissingTextureAtlasSprite.getLocation())).textureView().texture().iris$getGlId();
 				}, TextureType.TEXTURE_2D);
 			} else {
 				location = location.substring(0, extensionIndex - pbrType.getSuffix().length()) + location.substring(extensionIndex);
 				Identifier textureLocation = Identifier.fromNamespaceAndPath(namespace, location);
 
 				return new TextureWrapper(() -> {
-					AbstractTexture texture = textureManager.getTexture(textureLocation);
+					var texture = textureManager.getTexture(textureLocation);
 
 					if (texture != null) {
-						if (texture instanceof TextureAtlas || texture instanceof PBRAtlasTexture) {
-							int tex = GlStateManagerAccessor.getActiveTexture();
-							int binding = GlStateManagerAccessor.getTEXTURES()[tex].binding;
-							GlStateManager._activeTexture(GL46C.GL_TEXTURE0 + tex);
-							GlStateManager._bindTexture(binding);
-						}
-						int id = texture.getTexture().iris$getGlId();
+						int id = texture.textureView().texture().iris$getGlId();
 						PBRTextureHolder pbrHolder = PBRTextureManager.INSTANCE.getOrLoadHolder(id);
 						AbstractTexture pbrTexture = switch (pbrType) {
 							case NORMAL -> pbrHolder.normalTexture();
@@ -187,7 +175,7 @@ public class CustomTextureManager {
 						return pbrTexture.getTexture().iris$getGlId();
 					}
 
-					return textureManager.getTexture(MissingTextureAtlasSprite.getLocation()).getTexture().iris$getGlId();
+					return textureManager.getTexture(MissingTextureAtlasSprite.getLocation()).textureView().texture().iris$getGlId();
 				}, TextureType.TEXTURE_2D);
 			}
 		}

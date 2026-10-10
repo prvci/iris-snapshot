@@ -100,9 +100,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
+import net.minecraft.client.gui.components.debug.DebugGroups;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.DynamicTexture;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -1043,7 +1044,7 @@ public class IrisRenderingPipeline implements WorldRenderingPipeline, ShaderRend
 		if (this.shadowRenderer != null) {
 			shadowRenderer.addDebugText(messages);
 		} else {
-			messages.addLine("[Iris] Shadow Maps: not used by shader pack");
+			messages.addToGroup(DebugGroups.MISC, "[Iris] Shadow Maps: not used by shader pack");
 		}
 	}
 

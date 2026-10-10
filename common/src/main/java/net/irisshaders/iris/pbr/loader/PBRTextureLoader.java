@@ -1,10 +1,10 @@
 package net.irisshaders.iris.pbr.loader;
 
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
-public interface PBRTextureLoader<T extends AbstractTexture> {
+public interface PBRTextureLoader<T> {
 	/**
 	 * This method must not modify global GL state except the texture binding for {@code GL_TEXTURE_2D}.
 	 *

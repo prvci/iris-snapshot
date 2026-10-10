@@ -23,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FogRenderer.class)
 public class MixinFogRenderer {
 	@Inject(method = "setupFog", at = @At("HEAD"))
-	private void iris$setupLegacyWaterFog(Camera camera, int i, DeltaTracker deltaTracker, float f, ClientLevel clientLevel, CallbackInfoReturnable<FogData> cir) {
-		if (camera.getFluidInCamera() == FogType.WATER) {
+	private void iris$setupLegacyWaterFog(Camera camera, int i, DeltaTracker deltaTracker, float f, ClientLevel clientLevel, boolean b, CallbackInfoReturnable<FogData> cir) {
+		if (camera.getFogType() == FogType.WATER) {
 			Entity entity = camera.entity();
 
 			float density = 0.05F;
@@ -46,7 +46,7 @@ public class MixinFogRenderer {
 	}
 
 	@Inject(method = "setupFog", at = @At("RETURN"))
-	private void render(Camera camera, int i, DeltaTracker deltaTracker, float f, ClientLevel clientLevel, CallbackInfoReturnable<FogData> cir) {
+	private void render(Camera camera, int i, DeltaTracker deltaTracker, float f, ClientLevel clientLevel, boolean b, CallbackInfoReturnable<FogData> cir) {
 		CapturedRenderingState.INSTANCE.setFogColor(cir.getReturnValue().color.x, cir.getReturnValue().color.y, cir.getReturnValue().color.z);
 	}
 }

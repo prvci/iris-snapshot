@@ -27,6 +27,7 @@ public class MixinDimensionSpecialEffects {
 	                                  PoseStack poseStack,
 	                                  float sunAngle,
 	                                  Vector4fc sunriseAndSunsetColor,
+	                                  boolean renderWireframe,
 	                                  CallbackInfo ci) {
 		boolean blockSky = ((LevelRendererAccessor) Minecraft.getInstance().levelRenderer).getLevelRenderState().cameraRenderState.entityRenderState.doesMobEffectBlockSky;
 
@@ -34,7 +35,7 @@ public class MixinDimensionSpecialEffects {
 			ci.cancel();
 		}
 
-		FogType fogType = Minecraft.getInstance().gameRenderer.mainCamera().getFluidInCamera();
+		FogType fogType = Minecraft.getInstance().gameRenderer.mainCamera().getFogType();
 
 		if (fogType != FogType.NONE) {
 			ci.cancel();

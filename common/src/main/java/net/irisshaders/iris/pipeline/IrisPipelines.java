@@ -46,9 +46,15 @@ public class IrisPipelines {
 		assignToMain(RenderPipelines.LINES_TRANSLUCENT, p -> ShaderKey.LINES);
 		assignToMain(RenderPipelines.SECONDARY_BLOCK_OUTLINE, p -> ShaderKey.LINES);
 		assignToMain(RenderPipelines.STARS, p -> ShaderKey.SKY_BASIC);
+		assignToMain(RenderPipelines.STARS_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_BASIC);
 		assignToMain(RenderPipelines.SUNRISE_SUNSET, p -> ShaderKey.SKY_BASIC_COLOR);
+		assignToMain(RenderPipelines.SUNRISE_SUNSET_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_BASIC_COLOR);
 		assignToMain(RenderPipelines.SKY, p -> ShaderKey.SKY_BASIC);
+		assignToMain(RenderPipelines.SKY_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_BASIC);
+		assignToMain(RenderPipelines.SKY_OCCLUDER, p -> ShaderKey.SKY_BASIC);
+		assignToMain(RenderPipelines.SKY_OCCLUDER_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_BASIC);
 		assignToMain(RenderPipelines.CELESTIAL, p -> ShaderKey.SKY_TEXTURED);
+		assignToMain(RenderPipelines.CELESTIAL_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_TEXTURED);
 		assignToMain(RenderPipelines.OPAQUE_PARTICLE, p -> ShaderKey.PARTICLES);
 		assignToMain(RenderPipelines.TRANSLUCENT_PARTICLE, p -> ShaderKey.PARTICLES_TRANS);
 		assignToMain(RenderPipelines.WATER_MASK, p -> ShaderKey.BASIC);
@@ -72,6 +78,7 @@ public class IrisPipelines {
 		assignToMain(RenderPipelines.BEACON_BEAM_TRANSLUCENT, p -> ShaderKey.BEACON);
 		assignToMain(RenderPipelines.END_PORTAL, p -> ShaderKey.BLOCK_ENTITY);
 		assignToMain(RenderPipelines.END_SKY, p -> ShaderKey.SKY_TEXTURED);
+		assignToMain(RenderPipelines.END_SKY_WITH_DEPTH_ATTACHMENT, p -> ShaderKey.SKY_TEXTURED);
 		assignToMain(RenderPipelines.TEXT, p -> getText(p));
 		assignToMain(RenderPipelines.TEXT_POLYGON_OFFSET, p -> getText(p));
 		assignToMain(RenderPipelines.TEXT_SEE_THROUGH, p -> getText(p));

@@ -46,6 +46,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
+import net.minecraft.client.gui.components.debug.DebugGroups;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderBuffers;
@@ -519,12 +520,12 @@ public class ShadowRenderer {
 				((LevelRendererExtension) levelRenderer).sodium$getMatrices(), cameraX, cameraY, cameraZ);
 			SodiumWorldRenderer.instance().prepareChunkRendering(((LevelRendererExtension) levelRenderer).sodium$getMatrices(), this.levelRenderState.cameraRenderState.pos.x, this.levelRenderState.cameraRenderState.pos.y, this.levelRenderState.cameraRenderState.pos.z);
 
-			var atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getTextureView();
+			var atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getTexture().textureView();
 			// Render all opaque terrain unless pack requests not to
 			if (shouldRenderTerrain) {
 				pipeline.setPhase(WorldRenderingPhase.TERRAIN_SOLID);
 				try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "Terrain", Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView(), Optional.empty(), Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
-					sections.renderGroup(ChunkSectionLayerGroup.OPAQUE, renderPass, theSampler, atlas, false);
+					sections.renderGroup(ChunkSectionLayerGroup.OPAQUE, renderPass, theSampler, atlas, null, false);
 				}
 				pipeline.setPhase(WorldRenderingPhase.NONE);
 
@@ -600,7 +601,9 @@ public class ShadowRenderer {
 
 			var frame = featureRenderDispatcher.prepareFrame(submitNodeStorage);
 			try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "Terrain", Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView(), Optional.empty(), Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
-				FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
+				frame.executeSolid(renderPass);
+				frame.executeTranslucent(renderPass);
+				frame.executeTranslucentAfterTerrain(renderPass);
 			}
 			frame.close();
 			buffers.endFrame();
@@ -618,7 +621,7 @@ public class ShadowRenderer {
 			if (shouldRenderTranslucent) {
 				pipeline.setPhase(WorldRenderingPhase.TERRAIN_TRANSLUCENT);
 				try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "Terrain", Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView(), Optional.empty(), Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
-					sections.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, renderPass, theSampler, atlas,false);
+					sections.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT, renderPass, theSampler, atlas, null, false);
 				}
 				pipeline.setPhase(WorldRenderingPhase.NONE);
 			}
@@ -630,7 +633,7 @@ public class ShadowRenderer {
 
 		IrisRenderSystem.restorePlayerProjection();
 
-		debugStringTerrain = Minecraft.getInstance().levelExtractor.sectionStatistics();
+		debugStringTerrain = SodiumWorldRenderer.instance().getChunksDebugString();
 
 		profiler.popPush("generate mipmaps");
 
@@ -721,7 +724,7 @@ public class ShadowRenderer {
 		double e = vec3.y();
 		double f = vec3.z();
 		TickRateManager tickRateManager = Minecraft.getInstance().level.tickRateManager();
-		Entity.setViewScale(Mth.clamp((double)Minecraft.getInstance().options.getEffectiveRenderDistance() / (double)8.0F, (double)1.0F, (double)2.5F) * (Double)Minecraft.getInstance().options.entityDistanceScaling().get());
+		Entity.setViewScale(Math.clamp((double)Minecraft.getInstance().options.getEffectiveRenderDistance() / (double)8.0F, (double)1.0F, (double)2.5F) * (Double)Minecraft.getInstance().options.entityDistanceScaling().get());
 
 		for(Entity entity : Minecraft.getInstance().level.entitiesForRendering()) {
 			if (entity instanceof AbstractClientPlayer acp && acp.isSpectator()) continue;
@@ -789,23 +792,23 @@ public class ShadowRenderer {
 
 	public void addDebugText(DebugScreenDisplayer messages) {
 		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Maps: off, shadow distance 0");
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Maps: off, shadow distance 0");
 			return;
 		}
 
 		if (Iris.getIrisConfig().areDebugOptionsEnabled()) {
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Maps: " + debugStringOverall);
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Distance Terrain: " + terrainFrustumHolder.getDistanceInfo() + " Entity: " + entityFrustumHolder.getDistanceInfo());
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Culling Terrain: " + terrainFrustumHolder.getCullingInfo() + " Entity: " + entityFrustumHolder.getCullingInfo());
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Projection: " + getProjectionInfo());
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Terrain: " + debugStringTerrain
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Maps: " + debugStringOverall);
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Distance Terrain: " + terrainFrustumHolder.getDistanceInfo() + " Entity: " + entityFrustumHolder.getDistanceInfo());
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Culling Terrain: " + terrainFrustumHolder.getCullingInfo() + " Entity: " + entityFrustumHolder.getCullingInfo());
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Projection: " + getProjectionInfo());
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Terrain: " + debugStringTerrain
 				+ (shouldRenderTerrain ? "" : " (no terrain) ") + (shouldRenderTranslucent ? "" : "(no translucent)"));
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Entities: " + getEntitiesDebugString());
-			messages.addLine("[" + Iris.MODNAME + "] Shadow Block Entities: " + getBlockEntitiesDebugString());
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Entities: " + getEntitiesDebugString());
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow Block Entities: " + getBlockEntitiesDebugString());
 		} else {
-			messages.addLine("[" + Iris.MODNAME + "] Shadow info: " + debugStringTerrain);
-			messages.addLine("[" + Iris.MODNAME + "] E: " + renderedShadowEntities);
-			messages.addLine("[" + Iris.MODNAME + "] BE: " + renderedShadowBlockEntities);
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] Shadow info: " + debugStringTerrain);
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] E: " + renderedShadowEntities);
+			messages.addToGroup(DebugGroups.MISC, "[" + Iris.MODNAME + "] BE: " + renderedShadowBlockEntities);
 		}
 	}
 

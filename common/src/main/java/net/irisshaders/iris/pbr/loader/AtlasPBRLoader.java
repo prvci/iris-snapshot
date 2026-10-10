@@ -48,7 +48,7 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 		TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
 		int atlasWidth = atlasAccessor.callGetWidth();
 		int atlasHeight = atlasAccessor.callGetHeight();
-		int maxLevel = atlasAccessor.getMaxLevel();
+		int maxLevel = atlas.getTexture().texture().getMipLevels() - 1;
 
 		PBRAtlasTexture normalAtlas = null;
 		PBRAtlasTexture specularAtlas = null;

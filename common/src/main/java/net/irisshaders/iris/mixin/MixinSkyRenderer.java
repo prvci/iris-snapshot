@@ -27,6 +27,7 @@ public class MixinSkyRenderer {
 		at = @At(value = "HEAD"))
 	private void iris$renderSky$beginNormalSky(RenderPass renderPass,
 	                                           Vector3fc skyColor,
+	                                           boolean renderWireframe,
 	                                           CallbackInfo ci) {
 		// None of the vanilla sky is rendered until after this call, so if anything is rendered before, it's
 		// CUSTOM_SKY.
@@ -37,6 +38,7 @@ public class MixinSkyRenderer {
 	private void iris$beforeDrawSun(RenderPass renderPass,
 	                                float rainBrightness,
 	                                PoseStack poseStack,
+	                                boolean renderWireframe,
 	                                CallbackInfo ci) {
 		if (!Iris.getPipelineManager().getPipeline().map(WorldRenderingPipeline::shouldRenderSun).orElse(true)) {
 			ci.cancel();
@@ -48,6 +50,7 @@ public class MixinSkyRenderer {
 	                                 MoonPhase moonPhase,
 	                                 float rainBrightness,
 	                                 PoseStack poseStack,
+	                                 boolean renderWireframe,
 	                                 CallbackInfo ci) {
 		if (!Iris.getPipelineManager().getPipeline().map(WorldRenderingPipeline::shouldRenderMoon).orElse(true)) {
 			ci.cancel();
@@ -58,6 +61,7 @@ public class MixinSkyRenderer {
 	private void iris$setSunRenderStage(RenderPass renderPass,
 	                                    float rainBrightness,
 	                                    PoseStack poseStack,
+	                                    boolean renderWireframe,
 	                                    CallbackInfo ci) {
 		setPhase(WorldRenderingPhase.SUN);
 	}
@@ -67,6 +71,7 @@ public class MixinSkyRenderer {
 	                                     MoonPhase moonPhase,
 	                                     float rainBrightness,
 	                                     PoseStack poseStack,
+	                                     boolean renderWireframe,
 	                                     CallbackInfo ci) {
 		setPhase(WorldRenderingPhase.MOON);
 	}
@@ -76,6 +81,7 @@ public class MixinSkyRenderer {
 	                                       PoseStack poseStack,
 	                                       float sunAngle,
 	                                       Vector4fc sunriseAndSunsetColor,
+	                                       boolean renderWireframe,
 	                                       CallbackInfo ci) {
 		setPhase(WorldRenderingPhase.SUNSET);
 	}
@@ -84,12 +90,13 @@ public class MixinSkyRenderer {
 	private void iris$setStarRenderStage(RenderPass renderPass,
 	                                     float starBrightness,
 	                                     PoseStack poseStack,
+	                                     boolean renderWireframe,
 	                                     CallbackInfo ci) {
 		setPhase(WorldRenderingPhase.STARS);
 	}
 
-	@Inject(method = "renderDarkDisc", at = @At(value = "HEAD"))
-	private void iris$setVoidRenderStage(CallbackInfo ci) {
+	@Inject(method = "renderSkyOccluder", at = @At(value = "HEAD"))
+	private void iris$setVoidRenderStage(RenderPass renderPass, org.joml.Vector4f color, boolean renderWireframe, CallbackInfo ci) {
 		setPhase(WorldRenderingPhase.VOID);
 	}
 
@@ -102,6 +109,7 @@ public class MixinSkyRenderer {
 	                                    MoonPhase moonPhase,
 	                                    float rainBrightness,
 	                                    float starBrightness,
+	                                    boolean renderWireframe,
 	                                    CallbackInfo ci) {
 		poseStack.rotateDegrees(Axis.ZP, getSunPathRotation());
 	}

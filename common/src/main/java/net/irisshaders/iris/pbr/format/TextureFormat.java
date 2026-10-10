@@ -2,7 +2,7 @@ package net.irisshaders.iris.pbr.format;
 
 import net.irisshaders.iris.pbr.mipmap.CustomMipmapGenerator;
 import net.irisshaders.iris.pbr.texture.PBRType;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

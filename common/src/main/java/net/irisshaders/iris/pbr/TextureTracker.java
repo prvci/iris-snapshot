@@ -8,7 +8,7 @@ import net.irisshaders.iris.gl.IrisRenderSystem;
 import net.irisshaders.iris.gl.state.StateUpdateNotifiers;
 import net.irisshaders.iris.gl.texture.TextureType;
 import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import org.jetbrains.annotations.Nullable;
 
 public class TextureTracker {
@@ -20,19 +20,19 @@ public class TextureTracker {
 		StateUpdateNotifiers.bindTextureNotifier = listener -> bindTextureListener = listener;
 	}
 
-	private final Int2ObjectMap<AbstractTexture> textures = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectMap<Object> textures = new Int2ObjectOpenHashMap<>();
 
 	private boolean lockBindCallback;
 
 	private TextureTracker() {
 	}
 
-	public void trackTexture(int id, AbstractTexture texture) {
+	public void trackTexture(int id, Object texture) {
 		textures.put(id, texture);
 	}
 
 	@Nullable
-	public AbstractTexture getTexture(int id) {
+	public Object getTexture(int id) {
 		return textures.get(id);
 	}
 

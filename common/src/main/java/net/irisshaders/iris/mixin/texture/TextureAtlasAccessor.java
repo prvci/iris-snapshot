@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Map;
 
@@ -14,12 +13,9 @@ public interface TextureAtlasAccessor {
 	@Accessor("texturesByName")
 	Map<Identifier, TextureAtlasSprite> getTexturesByName();
 
-	@Accessor("maxMipLevel")
-	int getMaxLevel();
-
-	@Invoker("getWidth")
+	@Accessor("width")
 	int callGetWidth();
 
-	@Invoker("getHeight")
+	@Accessor("height")
 	int callGetHeight();
 }

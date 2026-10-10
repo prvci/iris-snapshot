@@ -1,10 +1,13 @@
 package net.irisshaders.iris.mixin.texture;
 
 import net.irisshaders.iris.pbr.format.TextureFormatLoader;
+import net.irisshaders.iris.pbr.TextureTracker;
 import net.irisshaders.iris.pbr.texture.PBRTextureManager;
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureHandle;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -20,6 +24,17 @@ import java.util.concurrent.Executor;
 
 @Mixin(TextureManager.class)
 public class MixinTextureManager {
+	@Inject(method = "getTexture", at = @At("RETURN"))
+	private void iris$trackTexture(Identifier location, CallbackInfoReturnable<TextureHandle> cir) {
+		TextureHandle handle = cir.getReturnValue();
+		if (handle != null) {
+			int id = handle.textureView().texture().iris$getGlId();
+			if (!(TextureTracker.INSTANCE.getTexture(id) instanceof net.minecraft.client.renderer.texture.TextureAtlas)) {
+				TextureTracker.INSTANCE.trackTexture(id, location);
+			}
+		}
+	}
+
 	@Shadow
 	@Final
 	private ResourceManager resourceManager;

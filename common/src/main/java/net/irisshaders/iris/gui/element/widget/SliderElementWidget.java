@@ -89,7 +89,7 @@ public class SliderElementWidget extends StringElementWidget {
 	}
 
 	private void whileDragging(int mouseX) {
-		float mousePositionAcrossWidget = Mth.clamp((float) (mouseX - (bounds.position().x() + 4)) / (bounds.width() - 8), 0, 1);
+		float mousePositionAcrossWidget = Math.clamp((float) (mouseX - (bounds.position().x() + 4)) / (bounds.width() - 8), 0, 1);
 
 		int newValueIndex = Math.min(valueCount - 1, (int) (mousePositionAcrossWidget * valueCount));
 

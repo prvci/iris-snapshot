@@ -5,7 +5,6 @@ import com.mojang.renderpearl.backend.opengl.GlProgram;
 import com.mojang.renderpearl.backend.opengl.GlRenderPass;
 import com.mojang.renderpearl.backend.opengl.GlRenderPipeline;
 import com.mojang.renderpearl.backend.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.ScissorState;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.gl.IrisRenderSystem;
 import net.irisshaders.iris.gl.blending.BlendModeOverride;
@@ -67,16 +66,6 @@ public class MixinGlCommandEncoder {
 			return;
 		} else {
 			GL33C.glScissor(i, j, k, l);
-		}
-	}
-
-	@Redirect(method = "createRenderPass", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/ScissorState;enable(IIII)V"))
-	private void changeViewport3(ScissorState instance, int x, int y, int width, int height) {
-		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
-			instance.enable(0, 0, ShadowRenderer.RESOLUTION, ShadowRenderer.RESOLUTION);
-			return;
-		} else {
-			instance.enable(x, y, width, height);
 		}
 	}
 

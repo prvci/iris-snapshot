@@ -180,10 +180,10 @@ public class ExtendedShader extends GlProgram implements IrisProgram {
 			if (shaderKey == ShaderKey.ENTITIES_CUTOUT_GLINT_ARMOR || shaderKey == ShaderKey.HAND_CUTOUT_GLINT_ARMOR
 				|| shaderKey == ShaderKey.HAND_TRANSLUCENT_GLINT_ARMOR) {
 				return Minecraft.getInstance().getTextureManager().getTexture(
-					ItemFeatureRenderer.ENCHANTED_GLINT_ARMOR).getTexture().iris$getGlId();
+					ItemFeatureRenderer.ENCHANTED_GLINT_ARMOR).textureView().texture().iris$getGlId();
 			} else {
 				return Minecraft.getInstance().getTextureManager().getTexture(
-					ItemFeatureRenderer.ENCHANTED_GLINT_ITEM).getTexture().iris$getGlId();
+					ItemFeatureRenderer.ENCHANTED_GLINT_ITEM).textureView().texture().iris$getGlId();
 			}
 		}
 		return pipeline.getWhitePixel().getTexture().iris$getGlId();

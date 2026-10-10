@@ -16,8 +16,7 @@ import net.irisshaders.iris.pbr.loader.PBRTextureLoader.PBRTextureConsumer;
 import net.irisshaders.iris.pbr.loader.PBRTextureLoaderRegistry;
 import net.irisshaders.iris.targets.backed.NativeImageBackedSingleColorTexture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.Dumpable;
+import net.irisshaders.iris.gl.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +58,7 @@ public class PBRTextureManager {
 	private PBRTextureManager() {
 	}
 
-	private static void dumpTexture(Dumpable dumpable, Identifier id, Path path) {
+	private static void dumpTexture(PBRDumpable dumpable, Identifier id, Path path) {
 		try {
 			dumpable.dumpContents(id, path);
 		} catch (IOException e) {
@@ -124,9 +123,9 @@ public class PBRTextureManager {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private PBRTextureHolder loadHolder(int id) {
-		AbstractTexture texture = TextureTracker.INSTANCE.getTexture(id);
+		Object texture = TextureTracker.INSTANCE.getTexture(id);
 		if (texture != null) {
-			Class<? extends AbstractTexture> clazz = texture.getClass();
+			Class<?> clazz = texture.getClass();
 			PBRTextureLoader loader = PBRTextureLoaderRegistry.INSTANCE.getLoader(clazz);
 			if (loader != null) {
 				int previousTextureBinding = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].binding;
