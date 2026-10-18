@@ -9,7 +9,7 @@ val NEOFORGE_VERSION by extra { "26.3.0.12-beta" }
 val FABRIC_LOADER_VERSION by extra { "0.19.5" }
 val FABRIC_API_VERSION by extra { "0.162.2+26.4" }
 
-val SODIUM_DEPENDENCY_FABRIC by extra { files(rootDir.resolve("../sodium-26.4/build/mods/sodium-fabric-0.9.3-SNAPSHOT+mc26.4s3-local.jar")) }
+val SODIUM_DEPENDENCY_FABRIC by extra { files(rootDir.resolve("sodium-fabric-0.9.3-SNAPSHOT+mc26.4s1-build.2.jar")) }
 val SODIUM_DEPENDENCY_NEO by extra { SODIUM_DEPENDENCY_FABRIC }
 
 // This value can be set to null to disable Parchment.
